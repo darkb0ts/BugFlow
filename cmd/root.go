@@ -8,7 +8,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:  "BugFlow",
-	Long: `BugFlowCandy is a command-line tool designed to help you run multiple bug bounty tools in a single platform.`,
+	Long: `BugFlow is a command-line tool designed to help you run multiple bug bounty tools in a single platform.`,
 }
 
 func Execute() bool {
