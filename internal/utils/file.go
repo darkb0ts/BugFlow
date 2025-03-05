@@ -7,9 +7,9 @@ import (
 
 // CreateDir ensures the output directory exists
 func CreateDir(dir string) error {
-	if checkDirExists(dir) {
+	if CheckDirExists(dir) {
 		count := 1
-		for checkDirExists(fmt.Sprintf("%s_%d", dir, count)) {
+		for CheckDirExists(fmt.Sprintf("%s_%d", dir, count)) {
 			count++
 		}
 		dir = fmt.Sprintf("%s_%d", dir, count)
@@ -21,7 +21,7 @@ func CreateDir(dir string) error {
 	return nil
 }
 
-func checkDirExists(dir string) bool {
+func CheckDirExists(dir string) bool {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		return false
 	}

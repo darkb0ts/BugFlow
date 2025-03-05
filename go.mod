@@ -1,4 +1,4 @@
-module github.com/darkb0ts/BugFlow
+module github.com/darkb0ts/BugFlowCandy
 
 go 1.23.0
 

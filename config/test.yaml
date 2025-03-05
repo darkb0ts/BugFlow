@@ -1,0 +1,26 @@
+workflow: "Linear" # Workflow type
+tree: 2 # number of tree levels work at the same time
+output: "output" # Output directory project
+project name: "" # Project name
+toolsTree:
+  tools:
+  - name: "subfinder"
+    url: "grok.com" # Target URL
+    command: "subfinder -d example.com -o {{.subdomains.txt}}"
+    output: "subdomains.txt"
+    next:
+    - name: "httpx"
+      command: "httpx -l subdomains.txt -o alive.txt"
+      output: "alive.txt"
+      next:
+      - name: "nuclei"
+        command: "nuclei -l alive.txt -o reports.txt"
+        input: "alive.txt"
+        output: "reports.txt"
+  - name: "aquatone"
+    url: "aquatone.com" # Target  
+    command: "aquatone-discover -d example.com"
+    output: "aquatone"
+  - name: "gau"
+    command: "gau example.com"
+    output: "gau.txt"

@@ -1,0 +1,19 @@
+tools:
+- name: "subfinder"
+  command: "subfinder -d example.com -o {{.subdomains.txt}}"
+  output: "subdomains.txt"
+  next:
+  - name: "httpx"
+    command: "httpx -l subdomains.txt -o alive.txt"
+    output: "alive.txt"
+    next:
+    - name: "nuclei"
+      command: "nuclei -l alive.txt -o reports.txt"
+      input: "alive.txt"
+      output: "reports.txt"
+- name: "aquatone"
+  command: "aquatone-discover -d example.com"
+  output: "aquatone"
+- name: "gau"
+  command: "gau example.com"
+  output: "gau.txt"

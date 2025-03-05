@@ -18,3 +18,7 @@ func LogInfo(message string) {
 func LogError(message string, err error) {
 	Logger.Printf("ERROR: %s - %v\n", message, err)
 }
+
+func LogFatal(message string, err error) {
+	Logger.Fatalf("FATAL: %s - %v\n", message, err)
+}
