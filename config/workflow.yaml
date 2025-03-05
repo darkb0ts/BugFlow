@@ -1,0 +1,37 @@
+tools:
+- name: "subfinder"
+  command: "subfinder -d example.com -o {{.subdomains.txt}}"
+  output: "subdomains.txt"
+  priority: 1
+  connect:
+    name: "httpx"
+    command: "httpx -l subdomains.txt -o alive.txt"
+    input: "subdomains.txt"
+
+- name: "httpx"
+  command: "httpx -l subdomains.txt -o alive.txt"
+  input: "subdomains.txt"
+  output: "alive.txt"
+  priority: 2
+
+- name: "nuclei"
+  command: "nuclei -l alive.txt -o reports.txt"
+  input: "alive.txt"
+  output: "reports.txt"
+  priority: 3
+
+- name: "aquatone"
+  command: "aquatone-discover -d example.com"
+  output: "aquatone"
+  priority: 4
+
+- name: "gau"
+  command: "gau example.com"
+  output: "gau.txt"
+  priority: 5
+
+workflow: "Linear" # Workflow type
+tree: 2 # number of tree levels work at the same time
+output: "output" # Output directory project
+project name: "example.com" # Project name
+url: "https://grok.com" # Target URL

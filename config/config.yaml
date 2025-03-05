@@ -1,0 +1,90 @@
+THREAD: 10
+############################################################################################################
+
+SCAN MODE:
+
+  # NODE 1 -> NODE 2 -> NODE 3 -> NODE 4 -> NODE 5    # LINEAR MODE
+
+  ############################################################################################################
+
+  #        NODE 1
+  #        /    \
+  #    NODE 2   NODE 3                     TREE MODE
+  #     /       \      
+  # NODE 4   NODE 5
+
+  ############################################################################################################
+
+  # NODE 1 ----- NODE 2                         
+  #   |      \         |                    GRAPH MODE
+  # NODE 3 -- NODE 4 -- NODE 5
+
+  ############################################################################################################
+
+  # NODE 1 -> NODE 2 -> NODE 3
+  #   |              \       |
+  #   v               v      v
+  # NODE 4 -> NODE 5
+
+  ############################################################################################################
+
+
+  DEFAULT SCAN MODE: "LINEAR" #default  # TREE or LINEAR OR GRAPH or DAG
+  DEFAULT TIME DELAY: 5 #default  time delay in seconds between each scan
+
+workflow: "Tree" # Workflow type
+tree: 2 # number of tree levels work at the same time
+output: "output" # Output directory project
+projectname: "example.com" # Project name
+url: "https://grok.com" # Target URL
+toolsTree:
+- tree: 1
+  tools:
+  - name: "subfinder"
+    command: "subfinder -d example.com -o {{.subdomains.txt}}"
+    output: "subdomains.txt"
+    connect:
+    - name: "httpx"
+      command: "httpx -l subdomains.txt -o alive.txt"
+      input: "subdomains.txt"
+    - name: "nuclei"
+      command: "nuclei -l alive.txt -o reports.txt"
+      input: "alive.txt"
+      output: "reports.txt"
+- tree: 2
+  tools:
+  - name: "subfinder"
+    command: "subfinder -d example.com -o {{.subdomains.txt}}"
+    output: "subdomains.txt"
+    priority: 1
+    connect:
+    - name: "httpx"
+      command: "httpx -l subdomains.txt -o alive.txt"
+      input: "subdomains.txt"
+    - name: "nuclei"
+      command: "nuclei -l alive.txt -o reports.txt"
+      input: "alive.txt"
+      output: "reports.txt"
+
+toolsTree 2:
+  tools:
+  - name: "subfinder"
+    command: "subfinder -d example.com -o {{.subdomains.txt}}"
+    output: "subdomains.txt"
+    next:
+    - name: "httpx"
+      command: "httpx -l subdomains.txt -o alive.txt"
+      ouput: "alive.txt"
+      next:
+      - name: "nuclei"
+        command: "nuclei -l alive.txt -o reports.txt"
+        input: "alive.txt"
+        output: "reports.txt"
+  - name: "aquatone"
+    command: "aquatone-discover -d example.com"
+    output: "aquatone"
+    priority: 4
+  - name: "gau"
+    command: "gau example.com"
+    output: "gau.txt"
+    priority: 5
