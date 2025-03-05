@@ -26,15 +26,18 @@ type ToolsTree struct {
 	Tools []Tool `mapstructure:"tools"`
 }
 
-func LoadConfig(filepath string) (*[]Tool, error) {
+func LoadConfig(filepath string) (bool, error) {
 	viper.SetConfigName(filepath) // Just the name without extension
 	viper.SetConfigType("yaml")   // Set the type explicitly
 	viper.AddConfigPath(".")      // Add the directory where the file is stored
+
 	if err := viper.ReadInConfig(); err != nil {
 		logger.LogError("Error reading config file, %s", err)
 	}
+	return true, nil
+}
 
-	// Unmarshal the config into the struct
+func LoadData() (*[]Tool, error) {
 	var toolsTree ToolsTree
 	if err := viper.Unmarshal(&toolsTree); err != nil {
 		logger.LogError("Unable to decode into struct, %v", err)
@@ -44,9 +47,19 @@ func LoadConfig(filepath string) (*[]Tool, error) {
 		return nil, fmt.Errorf("no tools found in config")
 	}
 
-	for i, k := range toolsTree.Tools {
-		fmt.Println(i, k)
+	for i, tool := range toolsTree.Tools {
+		printToolDetails(i, tool) // Call printToolDetails for each tool
 	}
 
 	return &toolsTree.Tools, nil
+}
+
+func printToolDetails(i int, k Tool) {
+	// Print the current tool's details
+	fmt.Printf("%d %s %s %s\n", i, k.Command, k.Name, k.Output)
+
+	// Iterate over the "next" tools and print their details recursively
+	for _, nextTool := range k.Next {
+		printToolDetails(i, nextTool) // Recursively print the nested tools
+	}
 }

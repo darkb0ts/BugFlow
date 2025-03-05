@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/darkb0ts/BugFlowCandy/internal/config"
-	"github.com/darkb0ts/BugFlowCandy/internal/utils"
+	"github.com/darkb0ts/BugFlowCandy/internal/executor"
 	"github.com/darkb0ts/BugFlowCandy/model"
 	"github.com/spf13/cobra"
 )
@@ -13,17 +13,14 @@ var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "Run the workflow",
 	Run: func(cmd *cobra.Command, args []string) {
-		if model.SharedData.Log {
-			utils.LogInfo("Logging enabled")
+		tools := []config.Tool{} // Initialize tools as needed
+		linearRunner := executor.NewLinearRunner(tools)
+		test, err := linearRunner.Start()
+		if err != nil {
+			fmt.Println("Error starting executor:", err)
+			return
 		}
-		if (model.SharedData.ConfigFile != "") && (model.SharedData.URL != "") && utils.CheckDirExists(model.SharedData.ConfigFile) {
-			message, err := config.LoadConfig(model.SharedData.ConfigFile)
-			if err != nil {
-				fmt.Printf("Error loading config: %v\n", message)
-				return
-			}
-
-		}
+		fmt.Println("Executor started successfully:", test)
 	},
 }
 
